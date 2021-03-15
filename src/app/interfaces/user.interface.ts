@@ -1,9 +1,15 @@
 // ======================================
 //			User Interface
 // ======================================
-export interface UsersInterface {
+export interface CreateUserInterface {
+	email: string;
+	password: string;
+	first_name: string;
+	last_name: string;
+}
+
+export interface UpdateUserInterface {
 	email?: string;
-	password?: string;
 	first_name?: string;
 	last_name?: string;
 }

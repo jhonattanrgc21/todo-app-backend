@@ -8,7 +8,6 @@ import {
 	BaseEntity,
 } from 'typeorm';
 import bcrypt from 'bcryptjs';
-import { BeforeInsert } from 'typeorm';
 
 // ======================================
 //		User Entity - SQL
@@ -16,50 +15,61 @@ import { BeforeInsert } from 'typeorm';
 @Entity('users')
 export default class User extends BaseEntity {
 	@PrimaryGeneratedColumn({ type: 'bigint', unsigned: true })
-	public id!: number;
+	public id!: string;
 
-	@Index('users_email_unique', { unique: true })
-	@Column({ type: 'varchar', length: 191 })
+	@Index('user_email_unique', { unique: true })
+	@Column({
+		type: 'varchar',
+		length: 191,
+	})
 	public email!: string;
 
-	@Column({ type: 'varchar', length: 191 })
+	@Column({
+		type: 'varchar',
+		length: 191,
+	})
 	public password!: string;
 
-	@Column({ type: 'varchar', length: 191, comment: 'Nombres.' })
+	@Column({
+		type: 'varchar',
+		length: 191,
+		comment: 'Nombres.',
+	})
 	public first_name!: string;
 
-	@Column({ type: 'varchar', length: 191, comment: 'Apellidos.' })
+	@Column({
+		type: 'varchar',
+		length: 191,
+		comment: 'Apellidos.',
+	})
 	public last_name!: string;
 
-	// ======================================
-	//			RelationShips
-	// ======================================
-
 	@CreateDateColumn({
-		type: 'timestamptz',
+		type: 'timestamp',
 		nullable: true,
+		select: false,
 	})
 	public created_at?: string;
 
 	@UpdateDateColumn({
-		type: 'timestamptz',
+		type: 'timestamp',
 		nullable: true,
+		select: false,
 	})
 	public updated_at?: string;
 
 	// ======================================
 	//			Encrypt Password
 	// ======================================
-	@BeforeInsert()
-	public async encryptPassword() {
-		const salt = await bcrypt.genSalt(10);
-		this.password = await bcrypt.hash(this.password, salt);
+	public encryptPassword() {
+		const salt = bcrypt.genSaltSync(10);
+		this.password = bcrypt.hashSync(this.password, salt);
 	}
 
 	// ======================================
 	//			Match Password
 	// ======================================
-	public async matchPassword(receivedPassword: string) {
-		return await bcrypt.compare(receivedPassword, this.password);
+	public matchPassword(receivedPassword: string) {
+		return bcrypt.compareSync(receivedPassword, this.password);
 	}
 }
